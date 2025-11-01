@@ -13,7 +13,8 @@ import { KafkaModule } from './kafka/kafka.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_URI || 'mongodb://admin:admin123@localhost:27017/productdb?authSource=admin'
+      process.env.MONGO_URI ||
+        'mongodb://admin:admin123@localhost:27017/productdb?authSource=admin',
     ),
     CacheModule.register({
       isGlobal: true,
@@ -24,6 +25,10 @@ import { KafkaModule } from './kafka/kafka.module';
     }),
     ElasticsearchModule.register({
       node: process.env.ELASTICSEARCH_NODE || 'http://localhost:9200',
+      auth: {
+        username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
+        password: process.env.ELASTICSEARCH_PASSWORD || 'changeme',
+      },
     }),
     KafkaModule,
     ProductsModule,

@@ -24,6 +24,7 @@ cd ../..
 ```
 
 Or use the convenience script:
+
 ```bash
 npm run install:all
 ```
@@ -61,24 +62,28 @@ The default values work with Docker Compose setup.
 Open four terminal windows:
 
 **Terminal 1 - Notification Service (start first to catch events):**
+
 ```bash
 cd services/notification-service
 npm run start:dev
 ```
 
 **Terminal 2 - User Service:**
+
 ```bash
 cd services/user-service
 npm run start:dev
 ```
 
 **Terminal 3 - Product Service:**
+
 ```bash
 cd services/product-service
 npm run start:dev
 ```
 
 **Terminal 4 - API Gateway:**
+
 ```bash
 cd services/api-gateway
 npm run start:dev
@@ -89,7 +94,7 @@ npm run start:dev
 Check that all services are running:
 
 - User Service: http://localhost:3001/users
-- Product Service: http://localhost:3002/products  
+- Product Service: http://localhost:3002/products
 - API Gateway: http://localhost:3000/api/users
 - Notification Service: http://localhost:3003
 - Kafka UI: http://localhost:8080
@@ -120,6 +125,7 @@ You should see the event appear in the Notification Service logs immediately!
 ### Create Test Data
 
 **Create a User:**
+
 ```bash
 curl -X POST http://localhost:3001/users \
   -H "Content-Type: application/json" \
@@ -132,6 +138,7 @@ curl -X POST http://localhost:3001/users \
 ```
 
 **Create a Product:**
+
 ```bash
 curl -X POST http://localhost:3002/products \
   -H "Content-Type: application/json" \
@@ -199,11 +206,13 @@ docker-compose down -v
 ### Database Access
 
 **MySQL:**
+
 ```bash
 docker exec -it microservices_mysql mysql -u user -ppassword123 userdb
 ```
 
 **MongoDB:**
+
 ```bash
 docker exec -it microservices_mongo mongosh -u admin -p admin123 --authenticationDatabase admin
 use productdb
@@ -211,6 +220,7 @@ db.products.find().pretty()
 ```
 
 **Redis:**
+
 ```bash
 docker exec -it microservices_redis redis-cli
 KEYS *

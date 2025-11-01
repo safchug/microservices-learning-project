@@ -49,6 +49,7 @@ This project now includes **Apache Kafka** for event-driven communication betwee
 ### User Events
 
 **user.created**
+
 ```json
 {
   "id": "uuid",
@@ -60,6 +61,7 @@ This project now includes **Apache Kafka** for event-driven communication betwee
 ```
 
 **user.updated**
+
 ```json
 {
   "id": "uuid",
@@ -74,6 +76,7 @@ This project now includes **Apache Kafka** for event-driven communication betwee
 ### Product Events
 
 **product.created**
+
 ```json
 {
   "id": "mongodb-id",
@@ -86,6 +89,7 @@ This project now includes **Apache Kafka** for event-driven communication betwee
 ```
 
 **product.updated**
+
 ```json
 {
   "id": "mongodb-id",
@@ -98,6 +102,7 @@ This project now includes **Apache Kafka** for event-driven communication betwee
 ```
 
 **product.stock.changed**
+
 ```json
 {
   "id": "mongodb-id",
@@ -134,24 +139,28 @@ cd ../notification-service && npm install
 Open 4 terminals:
 
 **Terminal 1 - Notification Service (start first to catch all events):**
+
 ```bash
 cd services/notification-service
 npm run start:dev
 ```
 
 **Terminal 2 - User Service:**
+
 ```bash
 cd services/user-service
 npm run start:dev
 ```
 
 **Terminal 3 - Product Service:**
+
 ```bash
 cd services/product-service
 npm run start:dev
 ```
 
 **Terminal 4 - API Gateway:**
+
 ```bash
 cd services/api-gateway
 npm run start:dev
@@ -176,6 +185,7 @@ curl -X POST http://localhost:3001/users \
 ```
 
 You should see in the Notification Service logs:
+
 ```
 📨 [2025-11-01T10:00:00.000Z] Received event from topic: user.created
 👤 New User Created!
@@ -207,6 +217,7 @@ curl -X PATCH http://localhost:3002/products/PRODUCT_ID \
 ```
 
 Watch for multiple events in Notification Service:
+
 ```
 📨 Received event from topic: product.created
 📦 New Product Created!
@@ -226,6 +237,7 @@ Watch for multiple events in Notification Service:
 Access the Kafka UI at **http://localhost:8080**
 
 Features:
+
 - View all topics
 - Browse messages
 - Monitor consumer groups
@@ -251,9 +263,9 @@ await this.kafkaProducer.publishEvent('user.created', {
 Notification Service subscribes to topics and processes events:
 
 ```typescript
-await this.consumer.subscribe({ 
+await this.consumer.subscribe({
   topics: ['user.created', 'user.updated', 'product.created'],
-  fromBeginning: false 
+  fromBeginning: false,
 });
 ```
 
@@ -348,12 +360,14 @@ docker-compose restart zookeeper kafka
 ### Events Not Being Received
 
 1. Check if consumer is connected:
+
 ```bash
 docker exec -it microservices_kafka kafka-consumer-groups \
   --bootstrap-server localhost:9092 --list
 ```
 
 2. Check consumer lag:
+
 ```bash
 docker exec -it microservices_kafka kafka-consumer-groups \
   --bootstrap-server localhost:9092 \
@@ -361,6 +375,7 @@ docker exec -it microservices_kafka kafka-consumer-groups \
 ```
 
 3. Verify topics exist:
+
 ```bash
 docker exec -it microservices_kafka kafka-topics \
   --bootstrap-server localhost:9092 --list

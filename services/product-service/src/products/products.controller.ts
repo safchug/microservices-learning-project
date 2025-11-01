@@ -1,7 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ProductsService } from './products.service';
-import { CreateProductDto, UpdateProductDto, SearchProductDto } from './dto/product.dto';
+import {
+  CreateProductDto,
+  UpdateProductDto,
+  SearchProductDto,
+} from './dto/product.dto';
 
 @Controller('products')
 export class ProductsController {

@@ -12,21 +12,21 @@ export class ProductsController {
   @Get()
   async getAllProducts() {
     return await firstValueFrom(
-      this.productService.send({ cmd: 'get_all_products' }, {})
+      this.productService.send({ cmd: 'get_all_products' }, {}),
     );
   }
 
   @Get('search')
   async searchProducts(@Query() query: any) {
     return await firstValueFrom(
-      this.productService.send({ cmd: 'search_products' }, query)
+      this.productService.send({ cmd: 'search_products' }, query),
     );
   }
 
   @Get(':id')
   async getProductById(@Param('id') id: string) {
     return await firstValueFrom(
-      this.productService.send({ cmd: 'get_product' }, id)
+      this.productService.send({ cmd: 'get_product' }, id),
     );
   }
 }

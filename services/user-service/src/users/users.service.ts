@@ -16,7 +16,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.userRepository.create(createUserDto);
     const savedUser = await this.userRepository.save(user);
-    
+
     // Publish event to Kafka
     await this.kafkaProducer.publishEvent('user.created', {
       id: savedUser.id,
@@ -25,7 +25,7 @@ export class UsersService {
       lastName: savedUser.lastName,
       timestamp: new Date().toISOString(),
     });
-    
+
     return savedUser;
   }
 
@@ -49,7 +49,7 @@ export class UsersService {
     const user = await this.findOne(id);
     Object.assign(user, updateUserDto);
     const updatedUser = await this.userRepository.save(user);
-    
+
     // Publish event to Kafka
     await this.kafkaProducer.publishEvent('user.updated', {
       id: updatedUser.id,
@@ -57,7 +57,7 @@ export class UsersService {
       changes: updateUserDto,
       timestamp: new Date().toISOString(),
     });
-    
+
     return updatedUser;
   }
 

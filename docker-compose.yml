@@ -12,7 +12,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password123
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -28,7 +28,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin123
       MONGO_INITDB_DATABASE: productdb
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongo_data:/data/db
     networks:
@@ -40,7 +40,7 @@ services:
     container_name: microservices_redis
     restart: always
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
@@ -55,10 +55,10 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - '9200:9200'
+      - '9300:9300'
     volumes:
       - elastic_data:/usr/share/elasticsearch/data
     networks:
@@ -70,7 +70,7 @@ services:
     container_name: microservices_kibana
     restart: always
     ports:
-      - "5601:5601"
+      - '5601:5601'
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     depends_on:
@@ -87,7 +87,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - '2181:2181'
     networks:
       - microservices_network
 
@@ -99,8 +99,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
-      - "29092:29092"
+      - '9092:9092'
+      - '29092:29092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -118,7 +118,7 @@ services:
     container_name: microservices_kafka_ui
     restart: always
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092

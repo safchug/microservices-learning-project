@@ -12,7 +12,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
       brokers: [process.env.KAFKA_BROKER || 'localhost:29092'],
       logLevel: logLevel.ERROR,
     });
-    
+
     this.consumer = this.kafka.consumer({
       groupId: process.env.KAFKA_GROUP_ID || 'notification-service-group',
     });
@@ -21,13 +21,19 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     await this.consumer.connect();
     console.log('✅ Kafka Consumer connected');
-    
+
     // Subscribe to topics
-    await this.consumer.subscribe({ 
-      topics: ['user.created', 'user.updated', 'product.created', 'product.updated', 'product.stock.changed'],
-      fromBeginning: false 
+    await this.consumer.subscribe({
+      topics: [
+        'user.created',
+        'user.updated',
+        'product.created',
+        'product.updated',
+        'product.stock.changed',
+      ],
+      fromBeginning: false,
     });
-    
+
     // Start consuming messages
     await this.consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
@@ -46,8 +52,10 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async handleEvent(topic: string, event: any): Promise<void> {
-    console.log(`\n📨 [${new Date().toISOString()}] Received event from topic: ${topic}`);
-    
+    console.log(
+      `\n📨 [${new Date().toISOString()}] Received event from topic: ${topic}`,
+    );
+
     switch (topic) {
       case 'user.created':
         await this.handleUserCreated(event);
@@ -105,9 +113,11 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     console.log('📊 Product Stock Changed!');
     console.log(`   Product: ${event.name}`);
     console.log(`   New Stock: ${event.stock} units`);
-    
+
     if (event.stock < 10) {
-      console.log(`   ⚠️  LOW STOCK ALERT! Only ${event.stock} units remaining!`);
+      console.log(
+        `   ⚠️  LOW STOCK ALERT! Only ${event.stock} units remaining!`,
+      );
       console.log(`   📧 Notifying inventory manager...`);
     } else if (event.stock === 0) {
       console.log(`   🚫 OUT OF STOCK! Notifying all stakeholders...`);

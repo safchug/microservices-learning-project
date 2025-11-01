@@ -6,13 +6,15 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   // Create HTTP application
   const app = await NestFactory.create(AppModule);
-  
+
   // Enable validation globally
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // Enable CORS
   app.enableCors();
@@ -27,11 +29,13 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  
+
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`🚀 User Service is running on: http://localhost:${port}`);
-  console.log(`📡 Microservice listening on TCP port: ${process.env.TCP_PORT || 3301}`);
+  console.log(
+    `📡 Microservice listening on TCP port: ${process.env.TCP_PORT || 3301}`,
+  );
 }
 
 bootstrap();

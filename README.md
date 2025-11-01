@@ -50,7 +50,7 @@ A comprehensive microservices architecture project using **Node.js**, **NestJS**
 
 - **Microservices Architecture**: Service decomposition, inter-service communication
 - **NestJS Framework**: Modern Node.js framework with TypeScript
-- **Database Patterns**: 
+- **Database Patterns**:
   - SQL (MySQL + TypeORM) for relational data
   - NoSQL (MongoDB + Mongoose) for document-based data
 - **Caching Strategy**: Redis for performance optimization
@@ -312,12 +312,14 @@ curl "http://localhost:3002/products/search?category=electronics"
 ### User Service - MySQL + TypeORM
 
 **Key Concepts:**
+
 - Entity definitions with decorators
 - Repository pattern
 - Database migrations
 - Relations and joins
 
 **Files to Study:**
+
 - `services/user-service/src/users/entities/user.entity.ts` - Entity definition
 - `services/user-service/src/users/users.service.ts` - Business logic
 - `services/user-service/src/app.module.ts` - TypeORM configuration
@@ -325,48 +327,56 @@ curl "http://localhost:3002/products/search?category=electronics"
 ### Product Service - MongoDB + Mongoose
 
 **Key Concepts:**
+
 - Schema definitions
 - Document-based data modeling
 - Mongoose middleware
 - Text indexes for search
 
 **Files to Study:**
+
 - `services/product-service/src/products/schemas/product.schema.ts` - Schema definition
 - `services/product-service/src/products/products.service.ts` - CRUD operations
 
 ### Redis Caching
 
 **Key Concepts:**
+
 - Cache-aside pattern
 - TTL (Time To Live)
 - Cache invalidation
 - Performance optimization
 
 **Implementation:**
+
 - Check `ProductsService.findAll()` and `findOne()` methods
 - Watch console logs for "Cache HIT" and "Cache MISS"
 
 ### Elasticsearch
 
 **Key Concepts:**
+
 - Full-text search
 - Index creation and mapping
 - Query DSL
 - Filtering and pagination
 
 **Implementation:**
+
 - `ProductsService.search()` - Search implementation
 - `initializeElasticsearchIndex()` - Index setup
 
 ### Microservice Communication
 
 **Key Concepts:**
+
 - TCP transport
 - Message patterns
 - Request-response pattern
 - Event-driven architecture
 
 **Files to Study:**
+
 - `services/api-gateway/src/app.module.ts` - Client setup
 - `services/user-service/src/users/users.controller.ts` - Message patterns
 
@@ -392,21 +402,25 @@ docker-compose restart mysql
 ### Access Database Clients
 
 **MySQL:**
+
 ```bash
 docker exec -it microservices_mysql mysql -u user -ppassword123 userdb
 ```
 
 **MongoDB:**
+
 ```bash
 docker exec -it microservices_mongo mongosh -u admin -p admin123 --authenticationDatabase admin
 ```
 
 **Redis:**
+
 ```bash
 docker exec -it microservices_redis redis-cli
 ```
 
 **Elasticsearch:**
+
 ```bash
 # Check cluster health
 curl http://localhost:9200/_cluster/health
@@ -421,22 +435,27 @@ Open http://localhost:5601 in your browser
 ## 📚 Learning Resources
 
 ### NestJS
+
 - [Official Documentation](https://docs.nestjs.com/)
 - [Microservices Guide](https://docs.nestjs.com/microservices/basics)
 
 ### TypeORM
+
 - [Official Documentation](https://typeorm.io/)
 - [Entity Relations](https://typeorm.io/relations)
 
 ### Mongoose
+
 - [Official Documentation](https://mongoosejs.com/)
 - [Schema Guide](https://mongoosejs.com/docs/guide.html)
 
 ### Redis
+
 - [Redis Caching Patterns](https://redis.io/docs/manual/patterns/)
 - [NestJS Cache Manager](https://docs.nestjs.com/techniques/caching)
 
 ### Elasticsearch
+
 - [Getting Started](https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html)
 - [Query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)
 
@@ -453,16 +472,19 @@ Open http://localhost:5601 in your browser
 ## 🐛 Troubleshooting
 
 ### Services won't start
+
 - Check if Docker containers are running: `docker-compose ps`
 - Check logs: `docker-compose logs -f`
 - Ensure ports are not in use: 3000, 3001, 3002, 3306, 27017, 6379, 9200
 
 ### Database connection errors
+
 - Wait for containers to be fully ready (30-60 seconds)
 - Check environment variables in `.env` files
 - Verify Docker container health: `docker-compose ps`
 
 ### Elasticsearch not working
+
 - Check if index exists: `curl http://localhost:9200/_cat/indices?v`
 - Check Elasticsearch logs: `docker-compose logs elasticsearch`
 - Elasticsearch needs at least 2GB RAM

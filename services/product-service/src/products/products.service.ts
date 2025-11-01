@@ -5,7 +5,11 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Product, ProductDocument } from './schemas/product.schema';
-import { CreateProductDto, UpdateProductDto, SearchProductDto } from './dto/product.dto';
+import {
+  CreateProductDto,
+  UpdateProductDto,
+  SearchProductDto,
+} from './dto/product.dto';
 import { KafkaProducerService } from '../kafka/kafka-producer.service';
 
 @Injectable()
@@ -28,7 +32,7 @@ export class ProductsService {
       const indexExists = await this.elasticsearchService.indices.exists({
         index: this.esIndex,
       });
-      
+
       if (!indexExists) {
         await this.elasticsearchService.indices.create({
           index: this.esIndex,
@@ -58,10 +62,10 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const product = new this.productModel(createProductDto);
     const savedProduct = await product.save();
-    
+
     // Index in Elasticsearch
     await this.indexProductInElasticsearch(savedProduct);
-    
+
     // Publish event to Kafka
     await this.kafkaProducer.publishEvent('product.created', {
       id: savedProduct._id.toString(),
@@ -71,67 +75,70 @@ export class ProductsService {
       stock: savedProduct.stock,
       timestamp: new Date().toISOString(),
     });
-    
+
     return savedProduct;
   }
 
   async findAll(): Promise<Product[]> {
     const cacheKey = 'all_products';
-    
+
     // Try to get from cache
     const cached = await this.cacheManager.get<Product[]>(cacheKey);
     if (cached) {
       console.log('✅ Cache HIT: all_products');
       return cached;
     }
-    
+
     console.log('❌ Cache MISS: all_products');
     const products = await this.productModel.find().exec();
-    
+
     // Store in cache
     await this.cacheManager.set(cacheKey, products);
-    
+
     return products;
   }
 
   async findOne(id: string): Promise<Product> {
     const cacheKey = `product_${id}`;
-    
+
     // Try cache first
     const cached = await this.cacheManager.get<Product>(cacheKey);
     if (cached) {
       console.log(`✅ Cache HIT: ${cacheKey}`);
       return cached;
     }
-    
+
     console.log(`❌ Cache MISS: ${cacheKey}`);
     const product = await this.productModel.findById(id).exec();
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-    
+
     // Store in cache
     await this.cacheManager.set(cacheKey, product);
-    
+
     return product;
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const product = await this.productModel
       .findByIdAndUpdate(id, updateProductDto, { new: true })
       .exec();
-      
+
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-    
+
     // Invalidate cache
     await this.cacheManager.del(`product_${id}`);
     await this.cacheManager.del('all_products');
-    
+
     // Update in Elasticsearch
     await this.indexProductInElasticsearch(product);
-    
+
     // Publish event to Kafka
     await this.kafkaProducer.publishEvent('product.updated', {
       id: product._id.toString(),
@@ -139,7 +146,7 @@ export class ProductsService {
       changes: updateProductDto,
       timestamp: new Date().toISOString(),
     });
-    
+
     // If stock changed, publish specific event
     if (updateProductDto.stock !== undefined) {
       await this.kafkaProducer.publishEvent('product.stock.changed', {
@@ -149,7 +156,7 @@ export class ProductsService {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     return product;
   }
 
@@ -158,11 +165,11 @@ export class ProductsService {
     if (!result) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-    
+
     // Invalidate cache
     await this.cacheManager.del(`product_${id}`);
     await this.cacheManager.del('all_products');
-    
+
     // Remove from Elasticsearch
     try {
       await this.elasticsearchService.delete({
@@ -175,11 +182,18 @@ export class ProductsService {
   }
 
   async search(searchDto: SearchProductDto): Promise<any> {
-    const { query, category, minPrice, maxPrice, page = 1, limit = 10 } = searchDto;
-    
+    const {
+      query,
+      category,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 10,
+    } = searchDto;
+
     const must: any[] = [];
     const filter: any[] = [];
-    
+
     if (query) {
       must.push({
         multi_match: {
@@ -188,18 +202,18 @@ export class ProductsService {
         },
       });
     }
-    
+
     if (category) {
       filter.push({ term: { category } });
     }
-    
+
     if (minPrice !== undefined || maxPrice !== undefined) {
       const range: any = {};
       if (minPrice !== undefined) range.gte = minPrice;
       if (maxPrice !== undefined) range.lte = maxPrice;
       filter.push({ range: { price: range } });
     }
-    
+
     const body: any = {
       from: (page - 1) * limit,
       size: limit,
@@ -210,13 +224,13 @@ export class ProductsService {
         },
       },
     };
-    
+
     try {
       const result = await this.elasticsearchService.search({
         index: this.esIndex,
         body,
       });
-      
+
       return {
         total: result.hits.total,
         page,
@@ -235,9 +249,16 @@ export class ProductsService {
   }
 
   private async fallbackSearch(searchDto: SearchProductDto): Promise<any> {
-    const { query, category, minPrice, maxPrice, page = 1, limit = 10 } = searchDto;
+    const {
+      query,
+      category,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 10,
+    } = searchDto;
     const filter: any = {};
-    
+
     if (query) {
       filter.$text = { $search: query };
     }
@@ -249,14 +270,14 @@ export class ProductsService {
       if (minPrice !== undefined) filter.price.$gte = minPrice;
       if (maxPrice !== undefined) filter.price.$lte = maxPrice;
     }
-    
+
     const total = await this.productModel.countDocuments(filter);
     const results = await this.productModel
       .find(filter)
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
-    
+
     return {
       total,
       page,

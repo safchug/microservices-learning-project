@@ -3,22 +3,26 @@
 ## ✅ Implemented Technologies
 
 ### Core Framework
+
 - ✅ **NestJS** - Modern Node.js framework with TypeScript
 - ✅ **TypeScript** - Type-safe development
 
 ### Databases
+
 - ✅ **MySQL** - Relational database for User Service
 - ✅ **TypeORM** - ORM for MySQL with entity mapping
 - ✅ **MongoDB** - NoSQL database for Product Service
 - ✅ **Mongoose** - ODM for MongoDB with schemas
 
 ### Caching & Performance
+
 - ✅ **Redis** - In-memory caching layer
 - ✅ Cache-aside pattern implementation
 - ✅ TTL (Time To Live) configuration
 - ✅ Cache invalidation strategies
 
 ### Search
+
 - ✅ **Elasticsearch** - Full-text search engine
 - ✅ Index creation and mapping
 - ✅ Query DSL with filtering
@@ -26,6 +30,7 @@
 - ✅ **Kibana** - Elasticsearch visualization
 
 ### Event-Driven Architecture
+
 - ✅ **Apache Kafka** - Distributed event streaming
 - ✅ **Zookeeper** - Kafka coordination
 - ✅ Event producers in User & Product services
@@ -33,6 +38,7 @@
 - ✅ **Kafka UI** - Web-based Kafka management
 
 ### Microservices Communication
+
 - ✅ **TCP Transport** - Synchronous RPC communication
 - ✅ **Message Patterns** - Request-response pattern
 - ✅ **Event Publishing** - Async event-driven pattern
@@ -41,6 +47,7 @@
 ### Services
 
 #### 1. User Service (Port 3001)
+
 - ✅ MySQL database
 - ✅ TypeORM entities
 - ✅ CRUD operations
@@ -49,6 +56,7 @@
 - ✅ Kafka event publishing (user.created, user.updated)
 
 #### 2. Product Service (Port 3002)
+
 - ✅ MongoDB database
 - ✅ Mongoose schemas
 - ✅ CRUD operations
@@ -59,18 +67,21 @@
 - ✅ Kafka event publishing (product.created, product.updated, product.stock.changed)
 
 #### 3. API Gateway (Port 3000)
+
 - ✅ Unified REST API
 - ✅ Service routing
 - ✅ TCP client connections
 - ✅ CORS enabled
 
 #### 4. Notification Service (Port 3003)
+
 - ✅ Kafka event consumer
 - ✅ Multi-topic subscription
 - ✅ Event handlers for all event types
 - ✅ Logging and notification simulation
 
 ### Infrastructure (Docker Compose)
+
 - ✅ MySQL (Port 3306)
 - ✅ MongoDB (Port 27017)
 - ✅ Redis (Port 6379)
@@ -81,6 +92,7 @@
 - ✅ Kafka UI (Port 8080)
 
 ### Documentation
+
 - ✅ **README.md** - Complete project overview
 - ✅ **SETUP.md** - Step-by-step setup guide
 - ✅ **KAFKA.md** - Kafka-specific documentation
@@ -157,7 +169,7 @@ curl -X POST http://localhost:3001/users \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","firstName":"Test","lastName":"User","age":25}'
 
-# Create a product (triggers Kafka event)  
+# Create a product (triggers Kafka event)
 curl -X POST http://localhost:3002/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Test Product","description":"Testing","price":99.99,"category":"test","stock":10}'

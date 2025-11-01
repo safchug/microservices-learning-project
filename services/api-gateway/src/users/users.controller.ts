@@ -12,14 +12,12 @@ export class UsersController {
   @Get()
   async getAllUsers() {
     return await firstValueFrom(
-      this.userService.send({ cmd: 'get_all_users' }, {})
+      this.userService.send({ cmd: 'get_all_users' }, {}),
     );
   }
 
   @Get(':id')
   async getUserById(@Param('id') id: string) {
-    return await firstValueFrom(
-      this.userService.send({ cmd: 'get_user' }, id)
-    );
+    return await firstValueFrom(this.userService.send({ cmd: 'get_user' }, id));
   }
 }
