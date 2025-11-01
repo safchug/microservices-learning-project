@@ -1,0 +1,31 @@
+{
+  "name": "microservices-learning-project",
+  "version": "1.0.0",
+  "description": "Learning microservices with NestJS, MySQL, MongoDB, Redis, and Elasticsearch",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:services",
+    "install:services": "cd services/user-service && npm install && cd ../product-service && npm install && cd ../api-gateway && npm install && cd ../notification-service && npm install",
+    "start:user": "cd services/user-service && npm run start:dev",
+    "start:product": "cd services/product-service && npm run start:dev",
+    "start:gateway": "cd services/api-gateway && npm run start:dev",
+    "start:notification": "cd services/notification-service && npm run start:dev",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "keywords": [
+    "microservices",
+    "nestjs",
+    "mysql",
+    "mongodb",
+    "redis",
+    "elasticsearch"
+  ],
+  "author": "",
+  "license": "MIT"
+}
