@@ -1,0 +1,158 @@
+name: Product Service Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+      - develop
+    paths:
+      - 'services/product-service/**'
+      - '.github/workflows/product-service-tests.yml'
+  push:
+    branches:
+      - master
+      - main
+      - develop
+    paths:
+      - 'services/product-service/**'
+
+jobs:
+  test:
+    name: Run Product Service Tests
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: admin123
+          MONGO_INITDB_DATABASE: productdb-test
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ping: 1})' --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+        env:
+          discovery.type: single-node
+          xpack.security.enabled: false
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -f http://localhost:9200/_cluster/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: services/product-service/package-lock.json
+
+      - name: Install dependencies
+        working-directory: services/product-service
+        run: npm ci
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for MongoDB..."
+          timeout 60 bash -c 'until mongosh --host localhost:27017 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
+          
+          echo "Waiting for Redis..."
+          timeout 60 bash -c 'until redis-cli -h localhost ping; do sleep 2; done'
+          
+          echo "Waiting for Elasticsearch..."
+          timeout 60 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "yellow\|green"; do sleep 2; done'
+          
+          echo "All services are ready!"
+
+      - name: Run unit tests
+        working-directory: services/product-service
+        run: npm test
+        env:
+          MONGO_URI: mongodb://admin:admin123@localhost:27017/productdb-test?authSource=admin
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          ELASTICSEARCH_NODE: http://localhost:9200
+          ELASTICSEARCH_INDEX: products-test
+
+      - name: Run tests with coverage
+        working-directory: services/product-service
+        run: npm run test:cov
+        env:
+          MONGO_URI: mongodb://admin:admin123@localhost:27017/productdb-test?authSource=admin
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          ELASTICSEARCH_NODE: http://localhost:9200
+          ELASTICSEARCH_INDEX: products-test
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./services/product-service/coverage/lcov.info
+          flags: product-service
+          name: product-service-coverage
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = fs.readFileSync('./services/product-service/coverage/coverage-summary.json', 'utf8');
+            const coverageData = JSON.parse(coverage);
+            const total = coverageData.total;
+            
+            const comment = `## 🧪 Product Service Test Results
+            
+            ✅ All tests passed!
+            
+            ### Coverage Report
+            | Metric | Coverage |
+            |--------|----------|
+            | Statements | ${total.statements.pct}% |
+            | Branches | ${total.branches.pct}% |
+            | Functions | ${total.functions.pct}% |
+            | Lines | ${total.lines.pct}% |
+            
+            ---
+            *Tests must pass before merging this PR*
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Fail if tests failed
+        if: failure()
+        run: |
+          echo "❌ Tests failed! Please fix the failing tests before merging."
+          exit 1
