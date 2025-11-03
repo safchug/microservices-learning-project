@@ -24,17 +24,17 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: process.env.TCP_HOST || 'localhost',
-      port: parseInt(process.env.TCP_PORT) || 3301,
+      port: parseInt(process.env.TCP_PORT) || 4301,
     },
   });
 
   await app.startAllMicroservices();
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 4001;
   await app.listen(port);
   console.log(`🚀 User Service is running on: http://localhost:${port}`);
   console.log(
-    `📡 Microservice listening on TCP port: ${process.env.TCP_PORT || 3301}`,
+    `📡 Microservice listening on TCP port: ${process.env.TCP_PORT || 4301}`,
   );
 }
 

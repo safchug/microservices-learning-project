@@ -15,7 +15,7 @@ import { ProductsModule } from './products/products.module';
         transport: Transport.TCP,
         options: {
           host: process.env.USER_SERVICE_HOST || 'localhost',
-          port: parseInt(process.env.USER_SERVICE_PORT) || 3301,
+          port: parseInt(process.env.USER_SERVICE_PORT) || 4301,
         },
       },
       {
@@ -23,7 +23,7 @@ import { ProductsModule } from './products/products.module';
         transport: Transport.TCP,
         options: {
           host: process.env.PRODUCT_SERVICE_HOST || 'localhost',
-          port: parseInt(process.env.PRODUCT_SERVICE_PORT) || 3302,
+          port: parseInt(process.env.PRODUCT_SERVICE_PORT) || 4302,
         },
       },
     ]),

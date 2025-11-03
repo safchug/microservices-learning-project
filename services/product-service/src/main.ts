@@ -21,13 +21,13 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: process.env.TCP_HOST || 'localhost',
-      port: parseInt(process.env.TCP_PORT) || 3302,
+      port: parseInt(process.env.TCP_PORT) || 4302,
     },
   });
 
   await app.startAllMicroservices();
 
-  const port = process.env.PORT || 3002;
+  const port = process.env.PORT || 4002;
   await app.listen(port);
   console.log(`🚀 Product Service is running on: http://localhost:${port}`);
   console.log(
