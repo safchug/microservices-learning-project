@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Inject, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -35,9 +40,10 @@ export class ProductsService implements OnModuleInit {
 
   private async initializeElasticsearchIndex() {
     try {
-      const { body: indexExists } = await this.elasticsearchClient.indices.exists({
-        index: this.esIndex,
-      });
+      const { body: indexExists } =
+        await this.elasticsearchClient.indices.exists({
+          index: this.esIndex,
+        });
 
       if (!indexExists) {
         await this.elasticsearchClient.indices.create({
