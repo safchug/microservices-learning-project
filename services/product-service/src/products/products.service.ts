@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 import { Product, ProductDocument } from './schemas/product.schema';
 import {
   CreateProductDto,
@@ -13,28 +13,34 @@ import {
 import { KafkaProducerService } from '../kafka/kafka-producer.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService implements OnModuleInit {
   private readonly esIndex = process.env.ELASTICSEARCH_INDEX || 'products';
+  private readonly elasticsearchClient: Client;
 
   constructor(
     @InjectModel(Product.name)
     private readonly productModel: Model<ProductDocument>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
-    private readonly elasticsearchService: ElasticsearchService,
     private readonly kafkaProducer: KafkaProducerService,
   ) {
-    this.initializeElasticsearchIndex();
+    this.elasticsearchClient = new Client({
+      node: process.env.ELASTICSEARCH_NODE || 'http://localhost:9200',
+    });
+  }
+
+  async onModuleInit() {
+    await this.initializeElasticsearchIndex();
   }
 
   private async initializeElasticsearchIndex() {
     try {
-      const indexExists = await this.elasticsearchService.indices.exists({
+      const { body: indexExists } = await this.elasticsearchClient.indices.exists({
         index: this.esIndex,
       });
 
       if (!indexExists) {
-        await this.elasticsearchService.indices.create({
+        await this.elasticsearchClient.indices.create({
           index: this.esIndex,
           body: {
             mappings: {
@@ -172,7 +178,7 @@ export class ProductsService {
 
     // Remove from Elasticsearch
     try {
-      await this.elasticsearchService.delete({
+      await this.elasticsearchClient.delete({
         index: this.esIndex,
         id: id,
       });
@@ -226,7 +232,7 @@ export class ProductsService {
     };
 
     try {
-      const result = await this.elasticsearchService.search({
+      const { body: result } = await this.elasticsearchClient.search({
         index: this.esIndex,
         body,
       });
@@ -288,7 +294,7 @@ export class ProductsService {
 
   private async indexProductInElasticsearch(product: any): Promise<void> {
     try {
-      await this.elasticsearchService.index({
+      await this.elasticsearchClient.index({
         index: this.esIndex,
         id: product._id.toString(),
         body: {

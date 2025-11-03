@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import * as redisStore from 'cache-manager-redis-store';
 import { ProductsModule } from './products/products.module';
 import { KafkaModule } from './kafka/kafka.module';
 
@@ -18,18 +17,19 @@ import { KafkaModule } from './kafka/kafka.module';
     ),
     CacheModule.register({
       isGlobal: true,
-      store: redisStore as any,
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT) || 6379,
-      ttl: parseInt(process.env.CACHE_TTL) || 300,
+      ttl: 300,
     }),
-    ElasticsearchModule.register({
-      node: process.env.ELASTICSEARCH_NODE || 'http://localhost:9200',
-      auth: {
-        username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
-        password: process.env.ELASTICSEARCH_PASSWORD || 'changeme',
-      },
-    }),
+    // ElasticsearchModule.registerAsync({
+    //   useFactory: async () => {
+    //     return {
+    //       node: 'http://localhost:9200',
+    //       maxRetries: 10,
+    //       requestTimeout: 60000,
+    //       pingTimeout: 60000,
+    //       sniffOnStart: false,
+    //     };
+    //   },
+    // }),
     KafkaModule,
     ProductsModule,
   ],
