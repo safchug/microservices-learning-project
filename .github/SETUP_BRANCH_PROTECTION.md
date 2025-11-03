@@ -39,10 +39,8 @@ Now go to branch protection settings:
 4. Scroll down and check these boxes:
 
    **Under "Protect matching branches":**
-   
    - ✅ **Require a pull request before merging**
      - Set "Required number of approvals before merging": 1 (optional)
-   
    - ✅ **Require status checks to pass before merging**
      - ⚠️ **This option only appears after status checks have run at least once**
      - After checking this box, search and select:
@@ -54,11 +52,8 @@ Now go to branch protection settings:
        - `Build Services (notification-service)`
        - `Docker Compose Validation`
        - `All Checks Passed`
-   
    - ✅ **Require branches to be up to date before merging** (appears under status checks)
-   
    - ✅ **Require conversation resolution before merging** (optional)
-   
    - ✅ **Do not allow bypassing the above settings** (optional but recommended)
 
 5. Click **Create** or **Save changes**
@@ -71,7 +66,7 @@ If you see "Rulesets" instead:
 2. Click **New ruleset** → **New branch ruleset**
 3. Ruleset name: `Protect main branch`
 4. Enforcement status: **Active**
-5. Target branches: 
+5. Target branches:
    - Click **Add target**
    - Select **Include default branch** or **Include by pattern** and enter `master`
 6. Under "Rules":
@@ -102,6 +97,7 @@ If you see "Rulesets" instead:
 **Cause:** GitHub needs to see at least one status check run before it shows this option.
 
 **Solution:**
+
 1. Push your workflow files first
 2. Let GitHub Actions run at least once
 3. Then go back to settings - the option will appear
@@ -111,6 +107,7 @@ If you see "Rulesets" instead:
 **Cause:** The check names haven't been registered yet.
 
 **Solution:**
+
 1. Make sure your workflows have run at least once
 2. Go to **Actions** tab to verify they ran
 3. The status check names will then be available to select
@@ -118,6 +115,7 @@ If you see "Rulesets" instead:
 ### Using the wrong branch protection UI
 
 GitHub has two interfaces:
+
 - **Classic branch protection rules** (older, simpler)
 - **Rulesets** (newer, more flexible)
 
