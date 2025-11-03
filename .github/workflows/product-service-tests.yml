@@ -80,13 +80,13 @@ jobs:
         run: |
           echo "Waiting for MongoDB..."
           timeout 60 bash -c 'until mongosh --host localhost:27017 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
-          
+
           echo "Waiting for Redis..."
           timeout 60 bash -c 'until redis-cli -h localhost ping; do sleep 2; done'
-          
+
           echo "Waiting for Elasticsearch..."
           timeout 60 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "yellow\|green"; do sleep 2; done'
-          
+
           echo "All services are ready!"
 
       - name: Run unit tests
@@ -127,11 +127,11 @@ jobs:
             const coverage = fs.readFileSync('./services/product-service/coverage/coverage-summary.json', 'utf8');
             const coverageData = JSON.parse(coverage);
             const total = coverageData.total;
-            
+
             const comment = `## 🧪 Product Service Test Results
-            
+
             ✅ All tests passed!
-            
+
             ### Coverage Report
             | Metric | Coverage |
             |--------|----------|
@@ -139,11 +139,11 @@ jobs:
             | Branches | ${total.branches.pct}% |
             | Functions | ${total.functions.pct}% |
             | Lines | ${total.lines.pct}% |
-            
+
             ---
             *Tests must pass before merging this PR*
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

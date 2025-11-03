@@ -29,15 +29,16 @@ ProductsService
 
 ### 📊 Code Coverage
 
-| File | Statements | Branches | Functions | Lines |
-|------|------------|----------|-----------|-------|
-| **products.service.ts** | **89.42%** | 63.04% | **100%** | **90.81%** |
-| products.schema.ts | 100% | 100% | 100% | 100% |
-| **Overall** | 50.45% | 39.18% | 42.3% | 50.98% |
+| File                    | Statements | Branches | Functions | Lines      |
+| ----------------------- | ---------- | -------- | --------- | ---------- |
+| **products.service.ts** | **89.42%** | 63.04%   | **100%**  | **90.81%** |
+| products.schema.ts      | 100%       | 100%     | 100%      | 100%       |
+| **Overall**             | 50.45%     | 39.18%   | 42.3%     | 50.98%     |
 
 ## What Was Tested
 
 ### ✅ CRUD Operations
+
 - Creating products with Kafka event publishing
 - Reading all products with Redis caching
 - Reading single product with caching
@@ -45,23 +46,27 @@ ProductsService
 - Deleting products with cache cleanup
 
 ### ✅ Caching Strategy (Redis)
+
 - Cache hit scenarios
 - Cache miss scenarios
 - Cache invalidation on update
 - Cache invalidation on delete
 
 ### ✅ Search Functionality (Elasticsearch)
+
 - Full-text search
 - Category filtering
 - Price range filtering
 - Fallback to MongoDB when Elasticsearch fails
 
 ### ✅ Event Publishing (Kafka)
+
 - `product.created` event
 - `product.updated` event
 - `product.stock.changed` event
 
 ### ✅ Error Handling
+
 - NotFoundException for missing products
 - Validation errors
 - Elasticsearch fallback
@@ -97,6 +102,7 @@ npm run test:e2e
 ### To run E2E tests:
 
 1. **Start Docker services:**
+
    ```bash
    docker-compose up -d
    ```
@@ -108,6 +114,7 @@ npm run test:e2e
    ```
 
 The E2E tests will:
+
 - Create real HTTP requests
 - Connect to MongoDB test database
 - Use Redis for caching
@@ -120,11 +127,12 @@ The E2E tests will:
 ✅ **Maintainability:** Tests catch regressions  
 ✅ **Documentation:** Tests show how to use the service  
 ✅ **Coverage:** 89.42% coverage on service logic  
-✅ **Best Practices:** Mocked dependencies, isolated tests  
+✅ **Best Practices:** Mocked dependencies, isolated tests
 
 ## Test Coverage Details
 
 The high coverage (89.42%) on ProductsService means:
+
 - ✅ All CRUD operations tested
 - ✅ Caching behavior verified
 - ✅ Error handling validated
@@ -132,6 +140,7 @@ The high coverage (89.42%) on ProductsService means:
 - ✅ Kafka event publishing confirmed
 
 ### Uncovered Lines
+
 - Elasticsearch index initialization (lines 37-58)
 - Some error logging paths
 - These are tested in E2E tests

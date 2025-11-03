@@ -5,19 +5,23 @@ This repository uses GitHub Actions to automatically run tests and checks on eve
 ## Workflows
 
 ### 1. Product Service Tests (`product-service-tests.yml`)
+
 Runs comprehensive tests for the Product Service whenever changes are made to that service.
 
 **Triggers:**
+
 - Pull requests to `master`, `main`, or `develop` branches
 - Push events to these branches
 - Only runs when files in `services/product-service/` are changed
 
 **Services Used:**
+
 - MongoDB 7.0 (test database)
 - Redis 7 (caching)
 - Elasticsearch 8.11.0 (search)
 
 **Steps:**
+
 1. ✅ Checkout code
 2. ✅ Setup Node.js 18
 3. ✅ Install dependencies
@@ -28,19 +32,23 @@ Runs comprehensive tests for the Product Service whenever changes are made to th
 8. ✅ Comment PR with test results
 
 ### 2. All Services CI (`ci.yml`)
+
 Comprehensive checks for the entire monorepo.
 
 **Jobs:**
 
 #### Product Service Tests
+
 - Runs all Product Service tests with coverage
 - Requires MongoDB, Redis, and Elasticsearch
 
 #### Lint Check
+
 - Runs Prettier formatting check
 - Runs ESLint on all services
 
 #### Build Services
+
 - Builds all 4 services in parallel:
   - user-service
   - product-service
@@ -49,9 +57,11 @@ Comprehensive checks for the entire monorepo.
 - Verifies build artifacts exist
 
 #### Docker Compose Validation
+
 - Validates `docker-compose.yml` configuration
 
 #### All Checks Passed (Required)
+
 - **This job blocks PR merging if any check fails**
 - Posts a summary comment on the PR
 
@@ -76,7 +86,7 @@ Enable these settings:
 
 ✅ Require status checks to pass before merging
    ✅ Require branches to be up to date before merging
-   
+
    Required status checks:
    ✅ Product Service Tests
    ✅ Lint Check
@@ -101,6 +111,7 @@ Repeat for `develop` or other branches if needed.
 For full functionality, add these secrets in **Settings** → **Secrets and variables** → **Actions**:
 
 ### Optional:
+
 - `CODECOV_TOKEN` - For code coverage reports (get from [codecov.io](https://codecov.io))
 
 ## How It Works
@@ -123,6 +134,7 @@ For full functionality, add these secrets in **Settings** → **Secrets and vari
 ### Automatic Comments:
 
 The workflow will post a comment on your PR with:
+
 - Test results
 - Coverage percentages
 - Status of each check
@@ -133,12 +145,12 @@ The workflow will post a comment on your PR with:
 ```markdown
 ## 🚀 CI/CD Checks
 
-| Check | Status |
-|-------|--------|
+| Check                 | Status     |
+| --------------------- | ---------- |
 | Product Service Tests | ✅ success |
-| Lint | ✅ success |
-| Build All Services | ✅ success |
-| Docker Compose | ✅ success |
+| Lint                  | ✅ success |
+| Build All Services    | ✅ success |
+| Docker Compose        | ✅ success |
 
 ✅ **All checks passed! This PR is ready to merge.**
 ```
@@ -191,6 +203,7 @@ docker-compose config
 ### Timeout Issues
 
 Services may take time to start. The workflow waits up to 60 seconds for:
+
 - MongoDB to respond to ping
 - Redis to respond to ping
 - Elasticsearch cluster to be healthy
@@ -198,6 +211,7 @@ Services may take time to start. The workflow waits up to 60 seconds for:
 ### Coverage Upload Fails
 
 This is non-blocking. You can:
+
 1. Add `CODECOV_TOKEN` secret
 2. Or remove the codecov step from the workflow
 
@@ -207,13 +221,14 @@ This is non-blocking. You can:
 ✅ **Confidence** - Every PR is tested automatically  
 ✅ **Documentation** - CI config documents requirements  
 ✅ **Speed** - Parallel execution saves time  
-✅ **Visibility** - Everyone sees test results on PR  
+✅ **Visibility** - Everyone sees test results on PR
 
 ## Customization
 
 ### Add More Tests
 
 Edit `.github/workflows/ci.yml` to add:
+
 - User Service tests
 - API Gateway tests
 - E2E tests
@@ -222,6 +237,7 @@ Edit `.github/workflows/ci.yml` to add:
 ### Modify Triggers
 
 Change `on:` section to trigger on:
+
 - Specific branches
 - Tags
 - Schedules (cron)
@@ -230,6 +246,7 @@ Change `on:` section to trigger on:
 ### Add Notifications
 
 Add steps to notify:
+
 - Slack
 - Discord
 - Email

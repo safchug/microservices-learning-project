@@ -7,6 +7,7 @@ This document describes the integration tests for the Product Service, covering 
 ## Test Coverage
 
 ### 1. **CRUD Operations**
+
 - ✅ Create product with valid data
 - ✅ Create product with invalid data (validation)
 - ✅ Get all products
@@ -16,12 +17,14 @@ This document describes the integration tests for the Product Service, covering 
 - ✅ Error handling (404, 400)
 
 ### 2. **Caching (Redis)**
+
 - ✅ Cache hit on repeated requests
 - ✅ Cache miss on first request
 - ✅ Cache invalidation after update
 - ✅ Cache invalidation after delete
 
 ### 3. **Search (Elasticsearch)**
+
 - ✅ Search by query text
 - ✅ Search by category
 - ✅ Search with price range
@@ -29,6 +32,7 @@ This document describes the integration tests for the Product Service, covering 
 - ✅ Fallback to MongoDB if Elasticsearch fails
 
 ### 4. **Event Publishing (Kafka)**
+
 - ✅ Publish `product.created` event
 - ✅ Publish `product.updated` event
 - ✅ Publish `product.stock.changed` event
@@ -38,6 +42,7 @@ This document describes the integration tests for the Product Service, covering 
 Before running tests, ensure:
 
 1. **Docker services are running:**
+
    ```bash
    docker-compose up -d
    ```
@@ -88,12 +93,14 @@ npm run test:e2e
 ### Unit Tests (`products.service.spec.ts`)
 
 Tests the service logic in isolation with mocked dependencies:
+
 - MongoDB Model
 - Redis Cache Manager
 - Elasticsearch Service
 - Kafka Producer
 
 **Key test scenarios:**
+
 - Product creation with event publishing
 - Caching behavior (cache hit/miss)
 - Cache invalidation on update/delete
@@ -104,6 +111,7 @@ Tests the service logic in isolation with mocked dependencies:
 ### Integration Tests (`products.e2e-spec.ts`)
 
 Tests the full HTTP request/response cycle:
+
 - Real HTTP requests via Supertest
 - Real MongoDB connection (test database)
 - Real Redis caching
@@ -111,6 +119,7 @@ Tests the full HTTP request/response cycle:
 - Kafka event publishing
 
 **Test flow:**
+
 1. Create a product → Verify response
 2. Fetch all products → Check caching
 3. Fetch single product → Check caching
@@ -173,21 +182,27 @@ Tests:       11 passed, 11 total
 ### Common Test Failures
 
 **1. MongoDB Connection Error**
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:27017
 ```
+
 **Solution:** Ensure Docker Compose is running: `docker-compose up -d`
 
 **2. Elasticsearch Timeout**
+
 ```
 Error: Elasticsearch cluster is not available
 ```
+
 **Solution:** Wait for Elasticsearch to be fully ready (30-60 seconds after starting)
 
 **3. Redis Connection Error**
+
 ```
 Error: Redis connection to localhost:6379 failed
 ```
+
 **Solution:** Check Redis container: `docker-compose logs redis`
 
 ## Debugging Tests
@@ -230,7 +245,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       mongodb:
         image: mongo:7.0
@@ -239,12 +254,12 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: admin123
         ports:
           - 27017:27017
-      
+
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
-      
+
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
         env:
@@ -252,22 +267,22 @@ jobs:
           xpack.security.enabled: false
         ports:
           - 9200:9200
-    
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - name: Install dependencies
         run: cd services/product-service && npm install
-      
+
       - name: Run unit tests
         run: cd services/product-service && npm test
-      
+
       - name: Run integration tests
         run: cd services/product-service && npm run test:e2e
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

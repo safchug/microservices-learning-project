@@ -193,23 +193,23 @@ jobs:
             const lint = '${{ needs.lint.result }}';
             const build = '${{ needs.build.result }}';
             const dockerCheck = '${{ needs.docker-compose-check.result }}';
-            
+
             const statusIcon = (status) => status === 'success' ? '✅' : '❌';
-            
+
             const comment = `## 🚀 CI/CD Checks
-            
+
             | Check | Status |
             |-------|--------|
             | Product Service Tests | ${statusIcon(productTests)} ${productTests} |
             | Lint | ${statusIcon(lint)} ${lint} |
             | Build All Services | ${statusIcon(build)} ${build} |
             | Docker Compose | ${statusIcon(dockerCheck)} ${dockerCheck} |
-            
+
             ${productTests === 'success' && lint === 'success' && build === 'success' && dockerCheck === 'success' 
               ? '✅ **All checks passed! This PR is ready to merge.**' 
               : '❌ **Some checks failed. Please fix the issues before merging.**'}
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

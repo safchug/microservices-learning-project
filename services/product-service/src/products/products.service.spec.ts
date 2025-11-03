@@ -30,12 +30,12 @@ describe('ProductsService', () => {
 
   beforeEach(async () => {
     const saveMock = jest.fn().mockResolvedValue(mockProduct);
-    
+
     mockProductModel = jest.fn().mockImplementation(() => ({
       ...mockProduct,
       save: saveMock,
     }));
-    
+
     mockProductModel.find = jest.fn();
     mockProductModel.findById = jest.fn();
     mockProductModel.findByIdAndUpdate = jest.fn();
@@ -198,9 +198,9 @@ describe('ProductsService', () => {
         exec: jest.fn().mockResolvedValue(null),
       });
 
-      await expect(
-        service.findOne('507f1f77bcf86cd799439011'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('507f1f77bcf86cd799439011')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -319,9 +319,7 @@ describe('ProductsService', () => {
     it('should fallback to MongoDB search if Elasticsearch fails', async () => {
       const searchDto = { query: 'test', page: 1, limit: 10 };
 
-      mockElasticsearchService.search.mockRejectedValue(
-        new Error('ES Error'),
-      );
+      mockElasticsearchService.search.mockRejectedValue(new Error('ES Error'));
       mockProductModel.countDocuments.mockResolvedValue(1);
       mockProductModel.find.mockReturnValue({
         skip: jest.fn().mockReturnThis(),
